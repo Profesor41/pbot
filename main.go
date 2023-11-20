@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/telegram-bot-api.v4"
@@ -34,18 +35,31 @@ var rootCmd = &cobra.Command{
 				continue
 			}
 
-			// Handle the incoming message
 			handleMessage(bot, update.Message)
 		}
 	},
 }
 
 func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	// Add your message handling logic here
-	// You can use message.Text to get the text of the message
+	switch strings.ToLower(message.Text) {
+	case "/start":
+		handleStart(bot, message)
+	case "/goodbye":
+		handleGoodbye(bot, message)
+	default:
+		// Handle other messages here
+		reply := tgbotapi.NewMessage(message.Chat.ID, "I don't understand that command.")
+		bot.Send(reply)
+	}
+}
 
-	// Example: Reply to the user
-	reply := tgbotapi.NewMessage(message.Chat.ID, "Hello! I received your message.")
+func handleStart(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	reply := tgbotapi.NewMessage(message.Chat.ID, "Hello! Welcome to the bot.")
+	bot.Send(reply)
+}
+
+func handleGoodbye(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	reply := tgbotapi.NewMessage(message.Chat.ID, "Goodbye! Have a great day.")
 	bot.Send(reply)
 }
 
